@@ -227,25 +227,25 @@ testfs_put_inode(struct inode *in)
         }
 }
 
-inline int
+int
 testfs_inode_get_size(struct inode *in)
 {
         return in->in.i_size;
 }
 
-inline inode_type
+inode_type
 testfs_inode_get_type(struct inode *in)
 {
         return in->in.i_type;
 }
 
-inline int
+int
 testfs_inode_get_nr(struct inode *in)
 {
         return in->i_nr;
 }
 
-inline struct super_block *
+struct super_block *
 testfs_inode_get_sb(struct inode *in)
 {
         return in->sb;
