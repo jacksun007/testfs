@@ -1,11 +1,12 @@
 #ifndef _COMMON_H
 #define _COMMON_H
-
 #include <string.h>
 #include <errno.h>
 #include <err.h>
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 
 #define EXIT(error) do { \
         fprintf(stderr, "%s: %s: %s\n", __FUNCTION__, error, strerror(errno)); \
@@ -23,5 +24,8 @@
 #define DIVROUNDUP(a,b) (((a)+(b)-1)/(b))
 #define ROUNDUP(a,b)    (DIVROUNDUP(a,b)*b)
 
+void init_modules(int argc, char *argv[]);
+void cleanup_modules(void);
+void print_rusage(void);
 
 #endif /* _COMMON_H */

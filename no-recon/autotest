@@ -1,0 +1,14 @@
+#!/bin/bash
+
+NUM_TRIALS=5
+CMD_SCRIPT=../corruption/script.txt
+
+wc -l $CMD_SCRIPT
+for (( i=1; i<=$NUM_TRIALS; i++ ))
+do
+	echo "Trial $i"
+	rm -f reference-disk.2*
+	cp ../reference-disk.0 reference-disk.2
+	./testfs reference-disk.2 < $CMD_SCRIPT > "output$i.txt"
+done
+

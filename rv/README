@@ -1,0 +1,48 @@
+Files: 
+
+block_diff.c: routines for diff'ing blocks, taking endian-ness into account
+rbtree.c: red-black tree for implementing block intervals
+rv.c: main file for implementing a block read and write cache
+rv_interval.c: block intervals
+rv_testfs.c: file system specific code
+
+- RV_LOG_CHANGE output types
+
+1. Transaction type
+   - tx_begin/tx_end
+   - type
+
+2. super_block
+   - index
+   - old
+   - new
+
+3. inode/block_freemap
+   - inode_nr/block_nr
+   - old: on/off
+   - new: on/off
+
+4. inode
+   - inode_nr
+   - index
+   - old
+   - new
+
+5. indirect_(dir_)block
+   - block_nr
+   - index
+   - old
+   - new
+
+6. dir_block
+   - add/remove
+   - dir_inode_nr
+   - name
+   - inode_nr
+   - dirent_size
+
+
+TODO:
+- Implement cache invalidation
+- Datalog queries for checking consistency
+

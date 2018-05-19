@@ -1,0 +1,146 @@
+rv_read:
+    assert(!find(new_hash))
+    find(current_hash)
+    if (found) goto found
+    if (type_not_known) return
+    rv_block_create(current_hash)
+    found:
+    if attached, done
+    rv_block_attach
+    rv_block_add_referenced_blocks
+
+rv_block_attach
+    block-specific copy
+
+rv_block_add_referenced_blocks
+    block-specific
+
+rv_write:
+    assert(!find(new_hash))
+    rv_block_create(new_hash)
+    assert(block not attached)
+    rv_block_attach
+
+rv_process_transaction:
+    - for each block in new_hash, find if block exists in current_hash
+    - if block exists in current_hash, link new rv_block to current rv_block and
+      set type information
+    - for each block in new_hash that has a type, run diff processing:
+
+when written, blocks can be:
+1. nothing is known
+2. type is known, but block is not attached (block never seen before)
+   - run rv_block_diff
+     - make a summary of changes in the block
+   - run rv_block_add_referenced_blocks
+3. type is known, block is attached
+   - run rv_block_diff
+     - make a summary of changes in the block
+   - run partial rv_block_add_referenced_blocks
+
+- issues:
+  - ordering of diff processing
+  - do not modify remove or add rv_blocks in new_hash or current_hash until the
+    very end
+  - implement find so that it looks in the new hash and then current hash during
+    diff processing
+    - is this needed for all other uses of find() - no
+    - what happens if a block that was recently updated is read? - error
+  - distinguish between read and writes, i.e., writes update new rv_block, reads
+    update current rv_block
+
+
+- block processing order:
+ 
+  process each block until no more blocks are processed in this round:
+  if (is_block_processed)
+      continue;
+  if (type == -1) {
+      find_rvb;
+      if (found) {
+          set type;
+      } else {
+          find rvi;
+          if (found) {
+              set type;
+          } else {
+              continue;
+          }
+      }
+  }
+  diff_block; set block_processed;
+
+At the end of processing written blocks:
+1. nothing is known
+   - at the end of processing, assuming no error, these must be data blocks
+   - get rid of new rv_block and block
+2. type is known, but block is not attached (block never seen before)
+   - attach block to original rv_block
+   - get rid of new rv_block
+3. type is known, block is attached
+   - update original rv_block with new block
+   - get rid of new rv_block
+
+
+
+
+Callee graph
+------------
+
+write_blocks
+    zero_blocks
+        testfs_make_inode_freemap                               8
+            mktestfs:main                                       *
+        testfs_make_block_freemap                       	9
+            mktestfs:main                                       *
+        testfs_make_inode_blocks                        	10
+            mktestfs:main                                       *
+        testfs_free_block                               	11
+            testfs_truncate_data                        	2
+                cmd_write                               	*
+                testfs_remove_inode                     	6
+                    testfs_create_file_or_dir           	5
+                        testfs_make_root_dir            	12
+                            mktestfs:main                       *
+                        cmd_create                      	*
+                        cmd_mkdir                       	*
+                    cmd_rm                              	*
+                testfs_write_data                       	1
+                    testfs_write_dirent                 	13
+                        testfs_add_dirent               	14
+                            testfs_create_empty_dir     	7
+                                testfs_create_file_or_dir       [5]
+                            testfs_create_file_or_dir           [5]
+                    testfs_remove_dirent                        15
+                        testfs_create_empty_dir                 [7]
+                        cmd_rm                                  *
+                    cmd_write                                   *
+    testfs_write_inode_block                                    16
+        testfs_sync_inode                                       17
+            testfs_create_file_or_dir                           [5]
+            cmd_write                                           *
+            testfs_remove_inode                                 [6]
+    testfs_allocate_block                                       4
+        testfs_write_data                                       [1]
+    testfs_write_data                                           [1]
+    testfs_truncate_data                                        [2]
+    testfs_write_super_block                                    22
+        testfs_make_super_block                                 23
+            mktestfs:main                                       *
+        testfs_close_super_block                                3
+            mktestfs:main, testfs:main                          *
+    testfs_close_super_block                                    [3]
+    testfs_write_inode_freemap                                  24
+        testfs_get_inode_freemap                                25
+            testfs_create_inode                                 8
+                testfs_create_file_or_dir                       [5]
+        testfs_put_inode_freemap                                26
+            testfs_remove_inode                                 [6]
+    testfs_write_block_freemap                                  27
+        testfs_get_block_freemap                                28
+            testfs_alloc_block                                  30
+                testfs_allocate_block                           [4]
+        testfs_put_block_freemap                                29
+            testfs_free_block                                   [11]
+
+
