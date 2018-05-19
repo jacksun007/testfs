@@ -2,7 +2,7 @@ vpath %.c ..
 vpath %.h ..
 DEFINES := -DDISABLE_RECON -DDISABLE_PROMPT -DDISABLE_OSYNC
 INCLUDES := 
-CFLAGS := -g -Wall $(DEFINES) $(INCLUDES)
+CFLAGS := $(COMMON_FLAGS) $(DEFINES) $(INCLUDES)
 SOURCES := $(addprefix ../, $(ALL_SOURCES))
 
 all: $(PROGS)

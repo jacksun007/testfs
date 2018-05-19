@@ -8,7 +8,7 @@
 
 VERSION := 0.1
 ZIPFILE := testfs_v$(VERSION).tar.gz
-BUILDS := full no-recon no-checking manual
+BUILDS := full no-recon no-checking manual vanilla
 
 export PROGS:=mktestfs testfs
 export COMMON_OBJECTS:=bitmap.o block.o super.o inode.o dir.o file.o tx.o common.o
@@ -17,12 +17,13 @@ export COMMON_SOURCES:=$(COMMON_OBJECTS:.o=.c)
 export ALL_SOURCES:=$(ALL_OBJECTS:.o=.c)
 export LOADLIBES:=-lpopt
 export CC:=gcc
+export COMMON_FLAGS := -g -Wall -Wextra -Werror -Wno-unused-parameter
 CLEANERS := $(addsuffix .clean, $(BUILDS))
 
 all: $(BUILDS)
 
 clean: $(CLEANERS)
-	rm -f testfs*.tar.gz
+	rm -f testfs*.tar.gz TAGS 
 	rm -rf *~
 
 $(BUILDS):

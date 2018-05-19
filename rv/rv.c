@@ -80,7 +80,7 @@ rv_init(FILE *dev, int corrupt, int block_threshold, struct rv **rvp)
         int ret;
         int consistent;
         int multiple_updates;
-        long i;
+        unsigned long i;
 
         srand(time(NULL));
         RET_NOMEM(rv = malloc(sizeof(struct rv)));
@@ -195,6 +195,8 @@ rv_write(struct rv *rv, int nr, char *block)
         int ret;
         struct rv_block *rvb;
 
+        if (!rv)
+                return;
         if (!rv->rv_enabled)
                 return;
         if (!rv->rv_in_tx) {
@@ -251,6 +253,8 @@ disable:
 void
 rv_tx_start(struct rv *rv, char *type)
 {
+        if (!rv)
+                return;
         if (!rv->rv_enabled)
                 return;
         RV_LOG("type = %s", type);
@@ -263,6 +267,8 @@ rv_tx_commit(struct rv *rv, char *type)
 {
         int ret;
 
+        if (!rv)
+                return;
         if (!rv->rv_enabled)
                 return;
         rv->rv_in_tx = 0;

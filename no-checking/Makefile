@@ -3,7 +3,7 @@ vpath %.h ..
 DEFINES := -DDISABLE_PROLOG -DDISABLE_PROMPT -DCACHE_INVALIDATE \
 	-DDISABLE_LOGGING
 INCLUDES := 
-CFLAGS := -g -Wall $(DEFINES) $(INCLUDES)
+CFLAGS := $(COMMON_FLAGS) $(DEFINES) $(INCLUDES)
 OBJECTS := $(COMMON_OBJECTS) rv/rv.o rv/block_diff.o rv/rv_interval.o \
 	rv/rv_testfs.o rv/rbtree.o
 DEP_SOURCES := $(OBJECTS:.o=.c) $(addsuffix .c, $(PROGS))

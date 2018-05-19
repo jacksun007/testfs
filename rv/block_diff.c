@@ -82,12 +82,12 @@ out:
 
 /* returns n'th bit in block.
    returns negative value on error. */
-inline int
+int
 block_get_bit(char *block, unsigned int n, int block_size, 
               int little_endian_bits)
 {
         unsigned int mask, v;
-        ASSERT(n < block_size * CHAR_BIT);
+        ASSERT((int)n < block_size * CHAR_BIT);
         v = ((unsigned int *)block)[n/BITS_PER_INT];
         if (little_endian_bits) {
                 mask = 1 << (n % BITS_PER_INT);

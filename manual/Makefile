@@ -3,7 +3,7 @@ vpath %.c $(SRCDIR)
 vpath %.h $(SRCDIR)
 DEFINES := -DCACHE_INVALIDATE
 INCLUDES := -I/usr/lib/swi-prolog/include/
-CFLAGS := -g -Wall $(DEFINES) $(INCLUDES)
+CFLAGS := $(COMMON_FLAGS) $(DEFINES) $(INCLUDES)
 OBJECTS := $(COMMON_OBJECTS) rv/rv.o rv/block_diff.o rv/rv_interval.o \
 	rv/rv_testfs.o rv/rbtree.o rv/prolog.o
 DEP_SOURCES := $(OBJECTS:.o=.c) $(addsuffix .c, $(PROGS))

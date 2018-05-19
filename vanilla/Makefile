@@ -1,25 +1,23 @@
-SRCDIR := ..
-vpath %.c $(SRCDIR)
-vpath %.h $(SRCDIR)
-DEFINES := -DDISABLE_PROMPT -DCACHE_INVALIDATE -DDISABLE_LOGGING
-INCLUDES := -I/usr/lib/swi-prolog/include/
+vpath %.c ..
+vpath %.h ..
+DEFINES := -DDISABLE_PROLOG -DCACHE_INVALIDATE
+INCLUDES := 
 CFLAGS := $(COMMON_FLAGS) $(DEFINES) $(INCLUDES)
 OBJECTS := $(COMMON_OBJECTS) rv/rv.o rv/block_diff.o rv/rv_interval.o \
-	rv/rv_testfs.o rv/rbtree.o rv/prolog.o
+	rv/rv_testfs.o rv/rbtree.o
 DEP_SOURCES := $(OBJECTS:.o=.c) $(addsuffix .c, $(PROGS))
 SOURCES := $(addprefix ../, $(DEP_SOURCES))
-RVDIR := $(SRCDIR)/rv
 
 all: setup $(PROGS)
 
 mktestfs: mktestfs.o $(OBJECTS)
-	swipl-ld -o $@ $(LOADLIBES) $(CFLAGS) -ld g++ -goal true $^ $(RVDIR)/testfs.pl
+	$(CC) -o $@ $(CFLAGS) $^ $(LOADLIBES) 
 
 testfs: testfs.o $(OBJECTS)
-	swipl-ld -o $@ $(LOADLIBES) $(CFLAGS) -ld g++ -goal true $^ $(RVDIR)/testfs.pl
+	$(CC) -o $@ $(CFLAGS) $^ $(LOADLIBES) 
 
 clean:
-	rm -f *.o $(PROGS) *.exe *~ reference-disk depend.mk
+	rm -f depend.mk *.o $(PROGS) *.exe *~ reference-disk
 	rm -rf rv
 
 .PHONY: setup
@@ -32,3 +30,4 @@ depend:
 ifeq (depend.mk,$(wildcard depend.mk))
 include depend.mk
 endif
+

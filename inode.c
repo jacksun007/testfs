@@ -128,7 +128,7 @@ testfs_get_block(struct inode *in, char *block, int log_block_nr)
                 goto read_block;
         }
         log_block_nr -= NR_DIRECT_BLOCKS;
-        if (log_block_nr >= NR_INDIRECT_BLOCKS)
+        if (log_block_nr >= (int)NR_INDIRECT_BLOCKS)
                 return -EFBIG;
         if (in->in.i_indirect == 0)
                 return 0;
@@ -159,7 +159,7 @@ testfs_allocate_block(struct inode *in, char *block, int log_block_nr)
                 return phy_block_nr;
         }
         log_block_nr -= NR_DIRECT_BLOCKS;
-        assert(log_block_nr < NR_INDIRECT_BLOCKS);
+        assert(log_block_nr < (int)NR_INDIRECT_BLOCKS);
         if (in->in.i_indirect == 0) {
                 phy_block_nr = testfs_alloc_block(in->sb, indirect);
                 if (phy_block_nr < 0)
@@ -226,25 +226,25 @@ testfs_put_inode(struct inode *in)
         }
 }
 
-inline int
+int
 testfs_inode_get_size(struct inode *in)
 {
         return in->in.i_size;
 }
 
-inline inode_type
+inode_type
 testfs_inode_get_type(struct inode *in)
 {
         return in->in.i_type;
 }
 
-inline int
+int
 testfs_inode_get_nr(struct inode *in)
 {
         return in->i_nr;
 }
 
-inline struct super_block *
+struct super_block *
 testfs_inode_get_sb(struct inode *in)
 {
         return in->sb;
@@ -369,7 +369,7 @@ testfs_truncate_data(struct inode *in, const int size)
         e_block_nr = DIVROUNDUP(in->in.i_size, BLOCK_SIZE);
 
         /* remove direct blocks */
-        for (i = s_block_nr; i < e_block_nr && i < NR_DIRECT_BLOCKS; i++) {
+        for (i = s_block_nr; i < e_block_nr && i < (int)NR_DIRECT_BLOCKS; i++) {
                 assert(in->in.i_block_nr[i] > 0);
                 testfs_free_block(in->sb, in->in.i_block_nr[i]);
                 in->in.i_block_nr[i] = 0;
@@ -383,7 +383,7 @@ testfs_truncate_data(struct inode *in, const int size)
                 char block[BLOCK_SIZE];
                 assert(in->in.i_indirect > 0);
                 read_blocks(in->sb, block, in->in.i_indirect, 1);
-                for (i = s_block_nr; i < e_block_nr && i < NR_INDIRECT_BLOCKS;
+                for (i = s_block_nr; i < e_block_nr && i < (int)NR_INDIRECT_BLOCKS;
                      i++) {
                         int block_nr = ((int *)block)[i];
                         assert(block_nr > 0);
@@ -409,7 +409,7 @@ testfs_check_inode(struct super_block *sb, struct bitmap *b_freemap,
                    struct inode *in)
 {
         int size = 0;
-        int i;
+        unsigned i;
         char block[BLOCK_SIZE];
 
         for (i = 0; i < NR_DIRECT_BLOCKS; i++) {

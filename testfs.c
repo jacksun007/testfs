@@ -47,6 +47,9 @@ cmd_help(struct super_block *sb, struct context *c)
         for (; cmdtable[i].name; i++) {
                 printf("%s\n", cmdtable[i].name);
         }
+        
+        (void)sb;
+        (void)c;
         return 0;
 }
 
@@ -55,6 +58,9 @@ cmd_quit(struct super_block *sb, struct context *c)
 {
         printf("Bye!\n");
         can_quit = true;
+        
+        (void)sb;
+        (void)c;
         return 0;
 }
 	
@@ -84,6 +90,10 @@ callback_func(poptContext context, struct poptOption *opt, char *arg,
               void *data)
 {
         poptSetOtherOptionHelp(context, "[--help] [OPTION...] rawfile");
+        
+        (void)opt;
+        (void)arg;
+        (void)data;
 }
 
 int
@@ -108,7 +118,8 @@ main(int argc, char *argv[])
 	        {NULL, 'b', POPT_ARG_INT, &block_threshold, 'b',
 	         "nr. of blocks in rv_block cache", "INT, default: unlimited"},
         #endif
-	        {NULL, 0, POPT_ARG_CALLBACK | POPT_CBFLAG_PRE, callback_func},
+	        {NULL, 0, POPT_ARG_CALLBACK | POPT_CBFLAG_PRE, callback_func, 0, 
+	         NULL, NULL},
 	        POPT_AUTOHELP
 	        POPT_TABLEEND
 	};

@@ -22,7 +22,7 @@ write_blocks(struct super_block *sb, char *blocks, int start, int nr)
         if (fseek(sb->dev, start * BLOCK_SIZE, SEEK_SET) < 0) {
                 EXIT("fseek");
         }
-        if (fwrite(blocks, BLOCK_SIZE, nr, sb->dev) != nr) {
+        if (fwrite(blocks, BLOCK_SIZE, nr, sb->dev) != (unsigned)nr) {
                 EXIT("fwrite");
         }
         if (fseek(sb->dev, pos, SEEK_SET) < 0) {
@@ -52,7 +52,7 @@ read_blocks(struct super_block *sb, char *blocks, int start, int nr)
         if (fseek(sb->dev, start * BLOCK_SIZE, SEEK_SET) < 0) {
                 EXIT("fseek");
         }
-        if (fread(blocks, BLOCK_SIZE, nr, sb->dev) != nr) {
+        if (fread(blocks, BLOCK_SIZE, nr, sb->dev) != (unsigned)nr) {
                 EXIT("freed");
         }
         if (fseek(sb->dev, pos, SEEK_SET) < 0) {

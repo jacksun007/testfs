@@ -164,7 +164,7 @@ bitmap_equal(struct bitmap *a, struct bitmap *b)
 int
 bitmap_nr_allocated(struct bitmap *b)
 {
-        int i;
+        unsigned i;
         int nr = 0;
 
         for (i = 0; i < b->nbits; i++) {

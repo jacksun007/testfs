@@ -226,7 +226,8 @@ static int
 inode_block_refs(struct testfs_block *tb)
 {
         struct dinode *di;
-        int i, j, ret;
+        unsigned i, j;
+        int ret;
         struct testfs_block *ntb;
         int nr = rv_block_get_nr((struct rv_block *)tb);
 
@@ -272,7 +273,8 @@ inode_block_refs(struct testfs_block *tb)
 static int
 indirect_dir_block_refs(struct testfs_block *tb)
 {
-        int i, ret;
+        unsigned i;
+        int ret;
         struct testfs_block *ntb;
         struct testfs_block_type_data *td = tb->data;
 
@@ -353,6 +355,9 @@ diff_super_fn(struct rv_block *nrvb, int index, int struct_index, int old,
 	rv_prolog_assert("aiii", rv_super_block, struct_index, old,
 	  new);
 #endif
+
+    (void)nrvb;
+    (void)index;
 	return 0;
 }
 
@@ -378,7 +383,7 @@ diff_freemap(diff_fn fn, struct rv_block *nrvb, char *block, char *nblock)
         if (ret <= 0)
                 return ret;
         while (1) {
-                unsigned int ob, nb;
+                int ob, nb;
                 n = block_next_diff(diff_block, n + 1, BLOCK_SIZE, 1);
                 if (n == -1)
                         break;
@@ -405,6 +410,9 @@ diff_inode_freemap_fn(struct rv_block *nrvb, int index, int struct_index,
 #ifndef DISABLE_PROLOG
 	rv_prolog_assert("aiii", rv_inode_freemap, struct_index, old, new);
 #endif
+
+        (void)nrvb;
+        (void)index;
         return 0;
 }
 
@@ -426,6 +434,9 @@ diff_block_freemap_fn(struct rv_block *nrvb, int index, int struct_index,
 	rv_prolog_assert("aiii", rv_block_freemap, 
 		struct_index + sb->data_blocks_start, old, new);
 #endif
+
+        (void)nrvb;
+        (void)index;
         return 0;
 }
 
@@ -504,7 +515,8 @@ diff_inode_fn(struct rv_block *nrvb, int index, int struct_index, int old,
 static int
 diff_inode_block(char *block, struct testfs_block *ntb)
 {
-        int i, ret;
+        unsigned i;
+        int ret;
 
         if (!block)
                 block = zero_block;
@@ -524,7 +536,7 @@ diff_inode_block(char *block, struct testfs_block *ntb)
 static int
 diff_indirect_block(char *block, struct testfs_block *ntb)
 {
-        int i;
+        unsigned i;
         int nr = rv_block_get_nr((struct rv_block *)ntb);
 
         if (!block)
@@ -554,7 +566,7 @@ diff_indirect_block(char *block, struct testfs_block *ntb)
 static int
 diff_indirect_dir_block(char *block, struct testfs_block *ntb)
 {
-        int i;
+        unsigned i;
         int nr;
         struct testfs_block_type_data *td = ntb->data;
 
@@ -616,7 +628,7 @@ read_data(struct dinode *di, int flags, int offset, char *buf, int size)
                         bnr = di->i_block_nr[block_nr];
                 } else {
                         block_nr -= NR_DIRECT_BLOCKS;
-                        if (block_nr >= NR_INDIRECT_BLOCKS) {
+                        if (block_nr >= (int)NR_INDIRECT_BLOCKS) {
                                 RET_ERROR(-EFBIG);
                         }
                         if (di->i_indirect == 0)
@@ -762,6 +774,8 @@ fill_dir_cache(int inode_nr, struct dirent *d, void *v)
         dh->flags = 0;
         hlist_add_head(&dh->dnode, &dcache[dhashfn(d->d_inode_nr)]);
         dh->dir = d;
+        
+        (void)inode_nr;
         return 0;
 }
 
@@ -854,6 +868,8 @@ diff_dir_block(char *block, struct testfs_block *ntb)
                 ASSERT(hlist_empty(&dcache[i]));
         }
         free(dcache);
+        
+        (void)block;
         return 0;
 }
 
@@ -881,6 +897,8 @@ testfs_txn_start(char *type)
 {
         INIT_LIST_HEAD(&gtx.processed_directory_list);
         INIT_LIST_HEAD(&gtx.deleted_block_list);
+        
+        (void)type;
         return 0;
 }
 
@@ -1120,7 +1138,7 @@ static int
 testfs_block_corrupt(struct rv_block *rvb)
 {
         struct testfs_block *tb = (struct testfs_block *)rvb;
-        int i, j, n;
+        unsigned i, j, n;
         unsigned int start, end;
 
 #define RAND(max) (long)(((float)rand() / RAND_MAX) * max)
@@ -1196,6 +1214,7 @@ static int find_child_inode_by_name(int inode_nr, struct dirent *d, void *v)
 		info->inode_nr = d->d_inode_nr;
 	}
 	
+	(void)inode_nr;
 	return 0;
 }
 	

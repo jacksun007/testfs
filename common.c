@@ -70,6 +70,8 @@ static void init_prolog(int argc, char *argv[])
 	}
 #endif
 #endif
+    (void)argc;
+    (void)argv;
 }
 
 static void cleanup_prolog(void)

@@ -36,3 +36,5 @@
 
 # TestFS image
 *.img
+
+*.log
